@@ -1,14 +1,17 @@
 import express from 'express';
-import dotenv from 'dotenv';
 import { connectToDatabase } from './config/database';
+import { swaggerSpec } from './swagger';
+import { ErrorMiddleware } from './middlewares/error.middleware';
+import dotenv from 'dotenv';
+import swaggerUi from 'swagger-ui-express';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+
 import userRoutes from './routes/user.routes';
 import universityRoutes from './routes/university.routes';
 import laundryUserRoutes from './routes/laundryUser.routes';
-import swaggerUi from 'swagger-ui-express';
-import { swaggerSpec } from './swagger';
-import { ErrorMiddleware } from './middlewares/error.middleware';
-import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
+import laundryMachineRoutes from './routes/laundryMachine.routes';
+import laundryHallRoutes from './routes/laundryHall.routes';
 
 dotenv.config();
 
@@ -21,6 +24,8 @@ connectToDatabase();
 app.use(express.json());
 
 // Routes
+app.use('/api/halls', laundryHallRoutes);
+app.use('/api/machines', laundryMachineRoutes);
 app.use('/api/laundryUser', laundryUserRoutes);
 app.use('/api/universities', universityRoutes);
 app.use('/api/users', userRoutes);
