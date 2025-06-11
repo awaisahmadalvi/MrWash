@@ -12,6 +12,10 @@ import universityRoutes from './routes/university.routes';
 import laundryUserRoutes from './routes/laundryUser.routes';
 import laundryMachineRoutes from './routes/laundryMachine.routes';
 import laundryHallRoutes from './routes/laundryHall.routes';
+import studentLedgerRoutes from './routes/studentLedger.routes';
+import discountPolicyRoutes from './routes/discountPolicy.routes';
+import washesHistoryRoutes from './routes/washesHistory.routes';
+import logFilesRoutes from './routes/logFiles.routes';
 
 dotenv.config();
 
@@ -24,6 +28,10 @@ connectToDatabase();
 app.use(express.json());
 
 // Routes
+app.use('/api/log-files', logFilesRoutes);
+app.use('/api/washes-history', washesHistoryRoutes);
+app.use('/api/discount-policies', discountPolicyRoutes);
+app.use('/api/ledger', studentLedgerRoutes);
 app.use('/api/halls', laundryHallRoutes);
 app.use('/api/machines', laundryMachineRoutes);
 app.use('/api/laundryUser', laundryUserRoutes);
