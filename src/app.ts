@@ -7,7 +7,6 @@ import swaggerUi from 'swagger-ui-express';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 
-import userRoutes from './routes/user.routes';
 import universityRoutes from './routes/university.routes';
 import laundryUserRoutes from './routes/laundryUser.routes';
 import laundryMachineRoutes from './routes/laundryMachine.routes';
