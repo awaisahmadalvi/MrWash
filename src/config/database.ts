@@ -1,15 +1,10 @@
 import { ConnectionPool, config } from 'mssql';
 
 const dbConfig: config = {
-  user: 'mhtk_laundry',
-  password: 'mhtk_laundry',
-  server: `sql.bsite.net\\MSSQL2016`,
-  database: 'mhtk_laundry',
-
-  // user: process.env.DB_USER,
-  // password: process.env.DB_PASSWORD,
-  // server: process.env.DB_SERVER || 'localhost',
-  // database: process.env.DB_NAME,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  server: process.env.DB_SERVER || '',
+  database: process.env.DB_NAME,
   options: {
     encrypt: true, // For Azure
     trustServerCertificate: true, // For local dev

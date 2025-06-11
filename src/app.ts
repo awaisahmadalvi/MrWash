@@ -1,8 +1,6 @@
 import express from 'express';
-import { connectToDatabase } from './config/database';
 import { swaggerSpec } from './swagger';
 import { ErrorMiddleware } from './middlewares/error.middleware';
-import dotenv from 'dotenv';
 import swaggerUi from 'swagger-ui-express';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
@@ -16,12 +14,7 @@ import discountPolicyRoutes from './routes/discountPolicy.routes';
 import washesHistoryRoutes from './routes/washesHistory.routes';
 import logFilesRoutes from './routes/logFiles.routes';
 
-dotenv.config();
-
 const app = express();
-
-// Database connection
-connectToDatabase();
 
 // Middleware
 app.use(express.json());
