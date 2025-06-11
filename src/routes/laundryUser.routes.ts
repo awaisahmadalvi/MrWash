@@ -6,6 +6,7 @@ const laundryUserController = new LaundryUserController();
 
 router.get('/', laundryUserController.getAllUsers);
 router.get('/:id', laundryUserController.getUserById);
+router.post('/login', laundryUserController.getUserByUsername);
 router.post('/', laundryUserController.createUser);
 router.put('/:id', laundryUserController.updateUser);
 router.delete('/:id', laundryUserController.deleteUser);

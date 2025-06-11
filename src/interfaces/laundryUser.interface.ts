@@ -45,3 +45,9 @@ export interface ILaundryUserUpdate {
   email?: string | null;
   otherInfo?: string | null;
 }
+
+export interface IAuth {
+  id: string;
+  username: string;
+  password: string;
+}

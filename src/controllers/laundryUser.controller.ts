@@ -1,10 +1,12 @@
 import { Request, Response } from 'express';
 import { LaundryUserService } from '../services/laundryUser.service';
 import {
+  IAuth,
   ILaundryUser,
   ILaundryUserCreate,
   ILaundryUserUpdate,
 } from '../interfaces/laundryUser.interface';
+import jwt, { Secret } from 'jsonwebtoken';
 
 export class LaundryUserController {
   private laundryUserService = new LaundryUserService();
@@ -50,6 +52,59 @@ export class LaundryUserController {
       const user = await this.laundryUserService.getUserById(id);
       if (user) {
         this.sendResponse(res, user);
+      } else {
+        this.sendError(res, 404, 'User not found');
+      }
+    } catch (error) {
+      console.error(error);
+      this.sendError(res, 500, 'Failed to fetch user');
+    }
+  };
+
+  public getUserByUsername = async (
+    req: Request,
+    res: Response
+  ): Promise<void> => {
+    try {
+      const userData: IAuth = req.body;
+
+      const username = userData.username;
+      if (username == null) {
+        return this.sendError(res, 400, 'Provide username');
+      }
+
+      const user = await this.laundryUserService.getUserByUsername(username);
+      if (user) {
+        // this.sendResponse(res, user);
+        // Validate credentials (implement your own logic with database)
+        if (user.Password !== userData.password) {
+          res.status(401).json({ message: 'Invalid credentials' });
+          return;
+        }
+        // Ensure JWT_SECRET is defined
+        const jwtSecret: Secret = process.env.JWT_SECRET as string;
+        if (!jwtSecret) {
+          res.status(500).json({ message: 'JWT_SECRET is not defined' });
+          return;
+        }
+
+        // Ensure JWT_EXPIRES_IN is defined, with a fallback
+        const expiresIn = process.env.JWT_EXPIRES_IN || '1h';
+
+        try {
+          // Generate JWT
+          const token = await jwt.sign(
+            { userId: user.UserID },
+            jwtSecret as Secret,
+            {
+              expiresIn: '2d',
+            }
+          );
+          res.json({ token });
+        } catch (error) {
+          console.error('JWT signing error:', error);
+          res.status(500).json({ message: 'Failed to generate token' });
+        }
       } else {
         this.sendError(res, 404, 'User not found');
       }

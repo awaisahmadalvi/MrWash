@@ -1,9 +1,11 @@
-import express from 'express';
 import { swaggerSpec } from './swagger';
-import { ErrorMiddleware } from './middlewares/error.middleware';
+import { ErrorMiddleware } from './middleware/error.middleware';
 import swaggerUi from 'swagger-ui-express';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+
+import { verifyToken } from './middleware/auth.middleware';
+import express, { Request, Response } from 'express';
 
 import universityRoutes from './routes/university.routes';
 import laundryUserRoutes from './routes/laundryUser.routes';
@@ -18,6 +20,19 @@ const app = express();
 
 // Middleware
 app.use(express.json());
+
+// Public routes
+app.use('/api/public', (req: Request, res: Response) => {
+  res.json({ message: 'This is a public endpoint' });
+});
+
+// Protected routes
+app.get('/api/protected', verifyToken, (req: Request, res: Response) => {
+  res.json({
+    message: 'This is a protected endpoint',
+    user: (req as any).user,
+  });
+});
 
 // Routes
 app.use('/api/log-files', logFilesRoutes);
