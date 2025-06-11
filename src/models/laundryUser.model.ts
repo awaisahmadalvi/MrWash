@@ -4,6 +4,7 @@ import {
   ILaundryUserCreate,
   ILaundryUserUpdate,
 } from '../interfaces/laundryUser.interface';
+import bcrypt from 'bcryptjs';
 
 export class LaundryUserModel {
   async getAllUsers(): Promise<ILaundryUser[]> {
@@ -25,10 +26,10 @@ export class LaundryUserModel {
     return result.recordset[0] || null;
   }
 
-  async getUserByUsername(username: string): Promise<ILaundryUser | null> {
+  async getUserByUsername(Username: string): Promise<ILaundryUser | null> {
     const result = await pool
       .request()
-      .input('Username', username)
+      .input('Username', Username)
       .query(
         'SELECT * FROM LaundryUser WHERE Username = @Username AND (isDeleted IS NULL OR isDeleted = 0)'
       );
@@ -36,10 +37,13 @@ export class LaundryUserModel {
   }
 
   async createUser(userData: ILaundryUserCreate): Promise<ILaundryUser> {
+    const salt = await bcrypt.genSalt(10); // Generate a salt with 10 rounds
+    const hashedPass = await bcrypt.hash(userData.Password, salt); // Hash the password
+
     const result = await pool
       .request()
       .input('Username', userData.Username)
-      .input('Password', userData.Password)
+      .input('Password', hashedPass)
       .input('firstname', userData.firstname || null)
       .input('lastname', userData.lastname || null)
       .input('address', userData.address || null)
@@ -67,11 +71,18 @@ export class LaundryUserModel {
     id: number,
     userData: ILaundryUserUpdate
   ): Promise<ILaundryUser | null> {
+    let hashedPass: string | null = null; // Declare hashedPass outside the if block
+
+    // Only hash the password if it's provided in the update data
+    if (userData.Password != null) {
+      const salt = await bcrypt.genSalt(10); // Generate a salt with 10 rounds
+      hashedPass = await bcrypt.hash(userData.Password, salt); // Hash the password
+    }
     const result = await pool
       .request()
       .input('UserID', id)
       .input('Username', userData.Username || null)
-      .input('Password', userData.Password || null)
+      .input('Password', hashedPass)
       .input('firstname', userData.firstname || null)
       .input('lastname', userData.lastname || null)
       .input('address', userData.address || null)

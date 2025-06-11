@@ -17,9 +17,9 @@ export class LaundryUserService {
   }
 
   public async getUserByUsername(
-    username: string
+    Username: string
   ): Promise<ILaundryUser | null> {
-    return this.laundryUserModel.getUserByUsername(username);
+    return this.laundryUserModel.getUserByUsername(Username);
   }
 
   public async createUser(userData: ILaundryUserCreate): Promise<ILaundryUser> {

@@ -48,6 +48,6 @@ export interface ILaundryUserUpdate {
 
 export interface IAuth {
   id: string;
-  username: string;
-  password: string;
+  Username: string;
+  Password: string;
 }

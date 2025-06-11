@@ -7,6 +7,7 @@ import {
   ILaundryUserUpdate,
 } from '../interfaces/laundryUser.interface';
 import jwt, { Secret } from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 
 export class LaundryUserController {
   private laundryUserService = new LaundryUserService();
@@ -68,28 +69,32 @@ export class LaundryUserController {
     try {
       const userData: IAuth = req.body;
 
-      const username = userData.username;
-      if (username == null) {
-        return this.sendError(res, 400, 'Provide username');
+      const Username = userData.Username;
+      if (Username == null) {
+        return this.sendError(res, 401, 'Invalid credentials');
       }
 
-      const user = await this.laundryUserService.getUserByUsername(username);
+      const user = await this.laundryUserService.getUserByUsername(Username);
       if (user) {
         // this.sendResponse(res, user);
         // Validate credentials (implement your own logic with database)
-        if (user.Password !== userData.password) {
-          res.status(401).json({ message: 'Invalid credentials' });
-          return;
+
+        // 1. Compare the provided plaintext password with the hashed password from the DB
+        const isMatch = await bcrypt.compare(userData.Password, user.Password);
+
+        if (!isMatch) {
+          // If they don't match
+          return this.sendError(res, 401, 'Invalid credentials');
         }
+
         // Ensure JWT_SECRET is defined
         const jwtSecret: Secret = process.env.JWT_SECRET as string;
         if (!jwtSecret) {
-          res.status(500).json({ message: 'JWT_SECRET is not defined' });
-          return;
+          return this.sendError(res, 500, 'JWT_SECRET is not defined');
         }
 
         // Ensure JWT_EXPIRES_IN is defined, with a fallback
-        const expiresIn = process.env.JWT_EXPIRES_IN || '1h';
+        // const expiresIn = process.env.JWT_EXPIRES_IN || '1h';
 
         try {
           // Generate JWT
@@ -97,7 +102,7 @@ export class LaundryUserController {
             { userId: user.UserID },
             jwtSecret as Secret,
             {
-              expiresIn: '2d',
+              expiresIn: '1h',
             }
           );
           res.json({ token });
