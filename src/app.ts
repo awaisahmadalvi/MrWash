@@ -36,7 +36,6 @@ app.use('/api/halls', laundryHallRoutes);
 app.use('/api/machines', laundryMachineRoutes);
 app.use('/api/laundryUser', laundryUserRoutes);
 app.use('/api/universities', universityRoutes);
-app.use('/api/users', userRoutes);
 
 // Swagger docs route
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));

@@ -19,6 +19,7 @@ export interface IWashesHistoryCreate {
   UserId: number;
   StartTime?: Date;
   Description?: string;
+  isDeleted: number;
   otherInfo?: string;
 }
 
